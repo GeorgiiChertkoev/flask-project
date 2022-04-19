@@ -6,8 +6,7 @@ from flask_login import (LoginManager, login_user,
 # from forms.news import NewsForm
 from data.works import Works
 from data.users import User
-# from data import db_session, news_api
-from data import db_session
+from data import db_session, works_api
 from flask_restful import reqparse, abort, Api, Resource
 # from data.news_resources import *
 
@@ -22,7 +21,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 def main():
     db_session.global_init("db/poems.db")
-    # app.register_blueprint(news_api.blueprint)
+    app.register_blueprint(works_api.blueprint)
     app.run()
 
 
@@ -38,7 +37,7 @@ def index():
     # else:
     #     news = db_sess.query(News).filter(News.is_private != True)
     return render_template("index.html", works=works)
-    # return works[0].content
+
 
 
 
@@ -50,6 +49,4 @@ def index():
 
 
 if __name__ == '__main__':
-    # api.add_resource(NewsListResource, '/api/v2/news') 
-    # api.add_resource(NewsResource, '/api/v2/news/<int:news_id>')
     main()
