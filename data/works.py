@@ -15,8 +15,8 @@ class Works(SqlAlchemyBase, SerializerMixin):
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     genre_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                 sqlalchemy.ForeignKey("genres.id"))
+    description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-
 
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, 
                                      default=datetime.datetime.now)
