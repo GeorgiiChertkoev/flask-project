@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Добавление произведения</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    {% for item in form %}
+        {% if loop.index <= 5 %}
+            <p>
+                {{ item.label }}
+                {{ item(class="form-control") }}
+
+            </p>
+            {% for error in form.title.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+        {% endfor %}
+        {% endif %}
+    {% endfor %}
+
+
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}

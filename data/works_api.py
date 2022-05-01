@@ -19,7 +19,7 @@ def create_work():
     if not request.json:
         return jsonify({'error': 'Empty request'})
     elif not all(key in request.json for key in
-                 ['title', 'genre_id', 'description', 'content', 'user_id', 'is_private']):
+                 ['title', 'kind_id', 'genre_id', 'description', 'content', 'user_id', 'is_private']):
         return jsonify({'error': 'Bad request'})
     db_sess = db_session.create_session()
     works = Works(
@@ -27,6 +27,7 @@ def create_work():
         genre_id=request.json['genre_id'],
         content=request.json['content'],
         user_id=request.json['user_id'],
+        kind_id=request.json['kind_id'],
         is_private=request.json['is_private'],
         description=request.json['description']
     )
@@ -55,7 +56,7 @@ def get_one_work(work_id):
     return jsonify(
         {
             'work': work.to_dict(only=(
-                'title', 'genre.name', 'description', 'content', 'user_id', 'is_private'))
+                'title', 'kind.name', 'genre.name', 'description', 'content', 'user_id', 'is_private'))
         }
     )
 
@@ -71,7 +72,8 @@ def get_newest_works(amount):
     return jsonify(
         {
             'works': [item.to_dict(
-                only=('title', 'genre.name', 'description', 'content', 'user_id', 'is_private'))
-             for item in works]
+                only=('title', 'kind.name', 'genre.name',
+                      'description', 'content', 'user_id', 'is_private'))
+                      for item in works]
         }
     )

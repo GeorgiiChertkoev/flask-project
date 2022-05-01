@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ user.name }}</h1>
+{% set logined = current_user.get_id() == user.id|string() %}
+
+{% if logined %}
+    <a href="/add_work" class="btn btn-secondary">Добавить произведение</a>
+{% endif %}
+<br>
+
+{% if logined %}
+    <h1>Ваши последние работы</h1>
+{% else %}
+    <h1>Последние работы этого автора</h1>
+{% endif %}
+
+
+{% for item in works %}
+<a class="col-md6 border rounded" href='/texts/{{ item.id|int() }}' style="color: black; text-decoration: none;">
+    <h2>{{item.title}}</h2>
+
+    <div style="overflow:hidden; text-overflow: ellipsis;">
+        {{item.description}}
+    </div>
+    <div style="overflow-x:hidden; text-overflow: ellipsis;">
+        Жанр - {{item.genre.name}}, Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
+    </div>
+</a>
+{% endfor %}
+
+<br>
+{% if logined %}
+    <a href="/logout" class="btn btn-outline-danger" style = "height: 40px; width: 200px;">
+        Выйти
+    </a>
+{% endif %}
+
+{% endblock %}

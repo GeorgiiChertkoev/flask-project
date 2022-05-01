@@ -13,6 +13,8 @@ class Works(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, 
                            primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    kind_id = sqlalchemy.Column(sqlalchemy.Integer, 
+                                sqlalchemy.ForeignKey("kinds.id"))
     genre_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                 sqlalchemy.ForeignKey("genres.id"))
     description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -25,3 +27,4 @@ class Works(SqlAlchemyBase, SerializerMixin):
                                 sqlalchemy.ForeignKey("users.id"))
     user = orm.relation('User')
     genre = orm.relation('Genre')
+    kind = orm.relation('Kind')

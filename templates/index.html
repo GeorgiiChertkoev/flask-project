@@ -1,18 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Недавние работы</h1>
-{% for item in works%}
-<div class="col-md6 border rounded">
-    <h2>{{item.title}}</h2>
-    <div>
-        {{item.content}}
-    </div>
-    <div>
-        Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
+<h1>Последние работы</h1>
+{% for item in works %}
+<a class="col-md6 border rounded" href='/texts/{{ item.id|int() }}' style="color: black; text-decoration: none;">
+    <h2 >{{item.title}}</h2>
+
+    <div style="overflow-x:hidden; text-overflow: ellipsis;">
+        {{item.description}}
     </div>
 
-</div>
+    <div style="overflow-x:hidden; text-overflow: ellipsis;">
+        Жанр - <b>{{item.genre.name}}</b>, Автор - <b>{{item.user.name}}</b>, Дата написания - {{item.created_date}}
+    </div>
+
+
+</a>
 {% endfor %}
 
 {% endblock %}

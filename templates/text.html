@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ work.title }}</h1>
+<div style="font-size: 15px;">
+    Жанр - <b>{{work.genre.name}}</b><br>
+    Автор - <b>{{work.user.name}}</b><br>
+    Дата написания - {{work.created_date}}<br>
+</div>
+<br>
+{% for paragraph in work.content %}
+    <p style="word-wrap: break-word;">
+        {{ paragraph }}
+    </p>
+{% endfor %}
+{% endblock %}
