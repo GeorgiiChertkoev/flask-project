@@ -1,21 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Последние работы</h1>
+<h1>{{ headline }}</h1>
 {% for item in works %}
-<a class="col-md6 border rounded" href='/texts/{{ item.id|int() }}' style="color: black; text-decoration: none;">
-    <h2 >{{item.title}}</h2>
+<div class="col-md6 border rounded" style="color: black;">
+    <a href='/texts/{{ item.id|int() }}' class='straight_link'>
+        <h2>{{item.title}}</h2>
 
+    </a>
+    
+    <div style="overflow-x:hidden; text-overflow: ellipsis; font-size: 14px;">
+        Жанр - <a href="/filtered_by_genre/{{ item.genre_id }}"><b>{{item.genre.name}}</b></a><br>
+        Автор - <a href="/profile/{{item.user_id}}"><b>{{item.user.name}}</b><a>
+        <br>Дата написания - {{item.created_date}}
+    </div>
+    <br>
     <div style="overflow-x:hidden; text-overflow: ellipsis;">
         {{item.description}}
     </div>
 
-    <div style="overflow-x:hidden; text-overflow: ellipsis;">
-        Жанр - <b>{{item.genre.name}}</b>, Автор - <b>{{item.user.name}}</b>, Дата написания - {{item.created_date}}
-    </div>
-
-
-</a>
+</div>
 {% endfor %}
 
 {% endblock %}

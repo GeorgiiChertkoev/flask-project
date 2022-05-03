@@ -7,11 +7,10 @@ from wtforms.validators import DataRequired
 
 class WorkForm(FlaskForm):
     title = StringField('Название', validators=[DataRequired()])
-    kind = SelectField('Тип', choices=['Стихотворение', 'Проза'])
     genre = SelectField('Жанр', choices=['эссе', 'эпос', 'эпопея',
                                          'скетч', 'роман', 'рассказ',
                                          'новелла', 'пьеса', 'повесть',
-                                         'очерк', 'опус', 'ода'])
+                                         'очерк', 'сказка', 'ода'])
     description = TextAreaField("Описание")
     content = TextAreaField("Текст", validators=[DataRequired()])
     submit = SubmitField('Сохранить')

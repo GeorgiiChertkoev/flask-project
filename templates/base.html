@@ -7,12 +7,24 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .straight_link {
+            text-decoration: none;
+            color: black;
+        }
+
+        .straight_link:hover {
+            color: black;
+        }
+
+    </style>
     <title>{{title}}</title>
 </head>
 <body>
 <header>
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="/">Наше приложение</a>
+        <a class="navbar-brand" href="/">Young artist</a>
                 {% if current_user.is_authenticated %}
             <a class="navbar-brand" href="/profile/{{ current_user.id }}">{{ current_user.name }}</a>
         {% else %}
@@ -28,4 +40,7 @@
     {% block content %}{% endblock %}
 </main>
 </body>
+<footer>
+    <div style="height: 40px;"></div>
+</footer>
 </html>

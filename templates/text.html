@@ -3,8 +3,8 @@
 {% block content %}
 <h1>{{ work.title }}</h1>
 <div style="font-size: 15px;">
-    Жанр - <b>{{work.genre.name}}</b><br>
-    Автор - <b>{{work.user.name}}</b><br>
+    Жанр - <a href="/filtered_by_genre/{{ work.genre_id }}"><b>{{work.genre.name}}</b></a><br>
+    Автор - <a href="/profile/{{ work.user_id }}"><b>{{work.user.name}}</b><a><br>
     Дата написания - {{work.created_date}}<br>
 </div>
 <br>

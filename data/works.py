@@ -9,22 +9,22 @@ from .db_session import SqlAlchemyBase
 
 class Works(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'works'
+    datetime_format = '%d %B %Y'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, 
                            primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    kind_id = sqlalchemy.Column(sqlalchemy.Integer, 
-                                sqlalchemy.ForeignKey("kinds.id"))
     genre_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                 sqlalchemy.ForeignKey("genres.id"))
     description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, 
-                                     default=datetime.datetime.now)
+                                     default=datetime.datetime.now())
     is_private = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                 sqlalchemy.ForeignKey("users.id"))
     user = orm.relation('User')
     genre = orm.relation('Genre')
-    kind = orm.relation('Kind')
+
+

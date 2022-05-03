@@ -1,3 +1,5 @@
+import datetime
+
 from flask import *
 from flask import jsonify
 from flask_login import (LoginManager, login_user,
@@ -5,23 +7,22 @@ from flask_login import (LoginManager, login_user,
 from forms.user import RegisterForm, LoginForm
 from forms.works import WorkForm
 from sqlalchemy.orm import joinedload
+import sqlalchemy
 from sqlalchemy.sql.expression import desc
 from requests import get, post, delete
 
 
 from data.works import Works
 from data.users import User
-from data.kind import Kind
 from data.genre import Genre
 from data import db_session, works_api
 from flask_restful import reqparse, abort, Api, Resource
 # from data.news_resources import *
 
-KINDS = ['Стихотворение', 'Проза']
 GENRES = ['эссе', 'эпос', 'эпопея',
           'скетч', 'роман', 'рассказ',
           'новелла', 'пьеса', 'повесть',
-          'очерк', 'опус', 'ода']
+          'очерк', 'сказка', 'ода']
 
 app = Flask(__name__)
 api = Api(app)
@@ -41,13 +42,6 @@ def main():
 def _insert_data():
     db_sess = db_session.create_session()
 
-    if not db_sess.query(Kind).all():
-        for idx, name in enumerate(KINDS):
-            poem = Kind(
-                id=idx + 1,
-                name=name,
-            )
-            db_sess.add(poem)
     if not db_sess.query(Genre).all():
         for idx, name in enumerate(GENRES):
             poem = Genre(
@@ -64,7 +58,9 @@ def index():
     db_sess = db_session.create_session()
     works = db_sess.query(Works).order_by(
         desc(Works.created_date))
-    return render_template("index.html", works=works)
+    return render_template("index.html",
+                           headline='Последние работы',
+                           works=works)
 
 
 @login_manager.user_loader
@@ -124,9 +120,14 @@ def logout():
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
+    # print(dir(request))
+    # print(request.referrer)
+
     db_sess = db_session.create_session()
     works = db_sess.query(Works).order_by(
-        desc(Works.created_date)).filter(Works.user_id == user_id)
+        desc(Works.created_date)).filter(Works.user_id == user_id).all()
+    # print(works.all())
+    # print(len(works.all()))
     return render_template('profile.html', user=load_user(user_id), works=works)
 
 
@@ -137,12 +138,12 @@ def add_work():
         db_sess = db_session.create_session()
         work = Works(
             title=form.title.data,
-            kind_id=KINDS.index(form.kind.data) + 1,
             genre_id=GENRES.index(form.genre.data) + 1,
             content=form.content.data,
             description=form.description.data,
             is_private=False,
-            user_id=current_user.id
+            user_id=current_user.id,
+            created_date=datetime.datetime.now()
         )
         db_sess.add(work)
         db_sess.commit()
@@ -152,19 +153,73 @@ def add_work():
     return render_template('works.html', form=form)
 
 
-@app.route('/texts/<int:work_id>')
-def get_work(work_id):
+@app.route('/delete_work/<int:work_id>')
+def delete_work(work_id):
     db_sess = db_session.create_session()
     work = db_sess.query(Works).get(work_id)
 
+    if not work or work.user_id != int(current_user.get_id()):
+        return redirect('/')
+
+    # print(dir(request))
+    db_sess.delete(work)
+    db_sess.commit()
+    return redirect(f'/profile/{current_user.id}')
+
+
+@app.route('/reduct_work/<int:work_id>', methods=['GET', 'POST'])
+def reduct_work(work_id):
+    form = WorkForm()
+
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        work = db_sess.query(Works).get(work_id)
+
+        form.title.data = work.title
+        form.genre.data = work.genre.name
+        form.description.data = work.description
+        form.content.data = work.content
+
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        work = db_sess.query(Works).get(work_id)
+
+        if work:
+            work.title = form.title.data
+            work.genre_id = GENRES.index(form.genre.data) + 1
+            work.content = form.content.data
+            work.description = form.description.data
+
+            db_sess.flush()
+            db_sess.commit()
+
+            return redirect(f'/profile/{current_user.id}')
+        else:
+            abort(404)
+
+    return render_template('works.html', form=form)
+
+
+@app.route('/texts/<int:work_id>')
+def get_work(work_id):
+    print(request.referrer)
+    db_sess = db_session.create_session()
+    work = db_sess.query(Works).get(work_id)
     # work.content = work.content.replace('', '')
     work.content = work.content.split('\r\n')
-    a = [work.content]
-    print(a)
+
     return render_template('text.html', work=work)
-    return work.to_dict(only=(
-        'title', 'kind.name', 'genre.name',
-        'description', 'content', 'user_id', 'is_private'))
+
+
+@app.route('/filtered_by_genre/<int:genre_id>')
+def filtered_by_genre(genre_id):
+    db_sess = db_session.create_session()
+    works = db_sess.query(Works).filter(Works.genre_id == genre_id).order_by(
+        desc(Works.created_date))
+    return render_template('index.html',
+                           headline=f'Работы в жанре {GENRES[genre_id - 1]}',
+                           works=works)
+
 
 @app.route("/test/<int:n>")
 def test_func(n):

@@ -1,0 +1,9 @@
+.straight_link {
+	text-decoration: none;
+	color: black;
+
+}
+
+.straight_link:hover {
+	color: black;
+}
