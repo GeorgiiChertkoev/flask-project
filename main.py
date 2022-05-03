@@ -3,7 +3,8 @@ import datetime
 from flask import *
 from flask import jsonify
 from flask_login import (LoginManager, login_user,
-                         logout_user, login_required, current_user)
+                         logout_user, login_required,
+                         current_user)
 from forms.user import RegisterForm, LoginForm
 from forms.works import WorkForm
 from sqlalchemy.orm import joinedload
@@ -16,7 +17,7 @@ from data.works import Works
 from data.users import User
 from data.genre import Genre
 from data import db_session, works_api
-from flask_restful import reqparse, abort, Api, Resource
+from flask_restful import reqparse, abort, Api
 # from data.news_resources import *
 
 GENRES = ['эссе', 'эпос', 'эпопея',
@@ -82,7 +83,9 @@ def login():
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
-    return render_template('login.html', title='Авторизация', form=form)
+    return render_template('login.html',
+                           title='Авторизация',
+                           form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -90,12 +93,14 @@ def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
-            return render_template('register.html', title='Регистрация',
+            return render_template('register.html',
+                                   title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
-            return render_template('register.html', title='Регистрация',
+            return render_template('register.html',
+                                   title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
         user = User(
@@ -108,7 +113,9 @@ def reqister():
         db_sess.commit()
         login_user(user, remember=True)
         return redirect('/')
-    return render_template('register.html', title='Регистрация', form=form)
+    return render_template('register.html',
+                           title='Регистрация',
+                           form=form)
 
 
 @app.route('/logout')
@@ -120,6 +127,9 @@ def logout():
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
+    """
+    Страница профиля
+    """
     # print(dir(request))
     # print(request.referrer)
 
@@ -128,11 +138,16 @@ def profile(user_id):
         desc(Works.created_date)).filter(Works.user_id == user_id).all()
     # print(works.all())
     # print(len(works.all()))
-    return render_template('profile.html', user=load_user(user_id), works=works)
+    return render_template('profile.html',
+                           user=load_user(user_id),
+                           works=works)
 
 
 @app.route("/add_work", methods=['GET', 'POST'])
 def add_work():
+    """
+    Добавление работы по форме
+    """
     form = WorkForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -175,6 +190,7 @@ def reduct_work(work_id):
         db_sess = db_session.create_session()
         work = db_sess.query(Works).get(work_id)
 
+        # Вставляем имеющиеся данные
         form.title.data = work.title
         form.genre.data = work.genre.name
         form.description.data = work.description
@@ -185,12 +201,15 @@ def reduct_work(work_id):
         work = db_sess.query(Works).get(work_id)
 
         if work:
+            # Меняем данные
             work.title = form.title.data
             work.genre_id = GENRES.index(form.genre.data) + 1
             work.content = form.content.data
             work.description = form.description.data
 
+            # нужен из-за того что я отключил "autoflush"
             db_sess.flush()
+
             db_sess.commit()
 
             return redirect(f'/profile/{current_user.id}')
@@ -219,6 +238,19 @@ def filtered_by_genre(genre_id):
     return render_template('index.html',
                            headline=f'Работы в жанре {GENRES[genre_id - 1]}',
                            works=works)
+
+@app.errorhandler(404)
+def not_found(error):
+    return """
+        <h1>
+        Ошибка 404<br>
+        К сожалению, данная страница не существует (っ °Д °;)っ
+        </h1>
+        <a href="/">
+            Перейти на главную
+        </a>
+    """
+
 
 
 @app.route("/test/<int:n>")
