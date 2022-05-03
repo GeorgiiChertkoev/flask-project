@@ -1,0 +1,8 @@
+datetime
+flask
+flask_login
+flask_restful
+requests
+sqlalchemy
+
+
