@@ -221,7 +221,7 @@ def reduct_work(work_id):
 
 @app.route('/texts/<int:work_id>')
 def get_work(work_id):
-    print(request.referrer)
+    # print(request.referrer)
     db_sess = db_session.create_session()
     work = db_sess.query(Works).get(work_id)
     # work.content = work.content.replace('', '')
